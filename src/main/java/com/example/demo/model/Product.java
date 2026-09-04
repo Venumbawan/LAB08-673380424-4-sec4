@@ -12,11 +12,17 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name")
     private String name;
+    @Column(name = "category")
     private String category;
+    @Column(name = "brand")
     private String brand;
+    @Column(name = "stock")
     private Integer stock;
+    @Column(name = "price")
     private Double price;
+    @Column(name = "discount_type")
     private String discountType;
 
     @OneToOne(cascade = CascadeType.ALL)

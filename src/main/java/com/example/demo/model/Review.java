@@ -11,9 +11,13 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "reviewer")
     private String reviewer;
+    @Column(name = "rating")
     private Integer rating;
+    @Column(name = "comment")
     private String comment;
+    @Column(name = "review_date")
     private LocalDate reviewDate;
 
     @ManyToOne
