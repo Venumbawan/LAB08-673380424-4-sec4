@@ -4,10 +4,6 @@ import com.example.demo.model.Product;
 import com.example.demo.model.ProductDetail;
 import com.example.demo.model.Review;
 import com.example.demo.repository.ProductRepository;
-import com.example.demo.strategy.DiscountContext;
-import com.example.demo.strategy.MemberDiscountStrategy;
-import com.example.demo.strategy.NoDiscountStrategy;
-import com.example.demo.strategy.SeasonalSaleStrategy;
 
 import org.springframework.stereotype.Service;
 
@@ -24,13 +20,7 @@ public class ProductService {
     }
 
     public List<Product> getAllProducts() {
-        List<Product> products = productRepository.findAll();
-
-        for (Product product : products) {
-            calculateDiscountedPrice(product);
-        }
-
-        return products;
+        return productRepository.findAll();
     }
 
     public Product getProductById(Long id) {
@@ -46,7 +36,9 @@ public class ProductService {
         product.getDetail().setProduct(product);
 
         if (product.getReviews() != null) {
+
             for (Review review : product.getReviews()) {
+
                 review.setProduct(product);
 
                 if (review.getReviewDate() == null
@@ -63,13 +55,14 @@ public class ProductService {
 
     public Product updateProduct(Long id, Product product) {
 
-        Product existingProduct = productRepository.findById(id).orElse(null);
+        Product existingProduct =
+                productRepository.findById(id).orElse(null);
 
         if (existingProduct == null) {
             return null;
         }
 
-        // Product
+       
         existingProduct.setName(product.getName());
         existingProduct.setCategory(product.getCategory());
         existingProduct.setBrand(product.getBrand());
@@ -77,7 +70,7 @@ public class ProductService {
         existingProduct.setPrice(product.getPrice());
         existingProduct.setDiscountType(product.getDiscountType());
 
-  
+    
         if (product.getDetail() != null) {
 
             if (existingProduct.getDetail() == null) {
@@ -85,16 +78,24 @@ public class ProductService {
             }
 
             existingProduct.getDetail()
-                    .setDescription(product.getDetail().getDescription());
+                    .setDescription(
+                            product.getDetail().getDescription()
+                    );
 
             existingProduct.getDetail()
-                    .setWarranty(product.getDetail().getWarranty());
+                    .setWarranty(
+                            product.getDetail().getWarranty()
+                    );
 
             existingProduct.getDetail()
-                    .setWeight(product.getDetail().getWeight());
+                    .setWeight(
+                            product.getDetail().getWeight()
+                    );
 
             existingProduct.getDetail()
-                    .setDimensions(product.getDetail().getDimensions());
+                    .setDimensions(
+                            product.getDetail().getDimensions()
+                    );
 
             existingProduct.getDetail()
                     .setManufacturedCountry(
@@ -108,39 +109,7 @@ public class ProductService {
         return productRepository.save(existingProduct);
     }
 
-
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
-    }
-    private void calculateDiscountedPrice(Product product) {
-
-        if (product.getPrice() == null) {
-            return;
-        }
-
-        DiscountContext context;
-
-        if ("MEMBER".equals(product.getDiscountType())) {
-
-            context = new DiscountContext(
-                    new MemberDiscountStrategy()
-            );
-
-        } else if ("SEASONAL".equals(product.getDiscountType())) {
-
-            context = new DiscountContext(
-                    new SeasonalSaleStrategy()
-            );
-
-        } else {
-
-            context = new DiscountContext(
-                    new NoDiscountStrategy()
-            );
-        }
-
-        double discountedPrice =
-                context.calculatePrice(product.getPrice());
-
     }
 }
